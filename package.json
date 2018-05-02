@@ -16,10 +16,10 @@
   },
   "dependencies": {
     "vue": "^2.5.2",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "autoprefixer": "^7.1.5"
   },
   "devDependencies": {
-    "autoprefixer": "^7.1.5",
     "babel-core": "^6.26.0",
     "sw-precache-webpack-plugin": "^0.11.4",
     "babel-eslint": "^8.0.1",
