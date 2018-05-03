@@ -1,12 +1,11 @@
 <template>
   <div id="app">
-    <header>
-      <span>Vue.js PWA</span>
-    </header>
     <main>
-      <img src="./assets/logo.png" alt="Vue.js PWA">
-      <router-view></router-view>
+      <img class="logo" align="center" src="./assets/logo.png" alt="FuelPwa">
     </main>
+    <footer>
+      <h6>Controle de gastos com combustível</h6>
+    </footer>
   </div>
 </template>
 
@@ -17,38 +16,26 @@ export default {
 </script>
 
 <style>
-body {
-  margin: 0;
-}
+  @media screen and (max-width: 300px) {
+    .logo {
+      width: 90%;
+    }
+  }
 
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-}
+  @media screen and (miin-width: 600px) {
+    img.logo {
+      width: 30%;
+    }
+  }
 
-main {
-  text-align: center;
-  margin-top: 40px;
-}
 
-header {
-  margin: 0;
-  height: 56px;
-  padding: 0 16px 0 24px;
-  background-color: #35495E;
-  color: #ffffff;
-}
+  h6 {
+    text-align: center;
+  }
 
-header span {
-  display: block;
-  position: relative;
-  font-size: 20px;
-  line-height: 1;
-  letter-spacing: .02em;
-  font-weight: 400;
-  box-sizing: border-box;
-  padding-top: 16px;
-}
+  .logo {
+    margin: 15px 0;
+    align-items: center;
+  }
 </style>
+
