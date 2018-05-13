@@ -3,8 +3,8 @@
     <main>
       <img class="logo" align="center" src="./assets/logo.png" alt="FuelPwa">
     </main>
-    <footer>
-      <h6>Controle de gastos com combustível</h6>
+    <footer class="bg-dark">
+      <h6 class="light">Controle de gastos com combustível</h6>
     </footer>
   </div>
 </template>
@@ -17,7 +17,7 @@ export default {
 
 <style>
   @media screen and (max-width: 300px) {
-    .logo {
+    img.logo {
       width: 90%;
     }
   }
@@ -28,6 +28,13 @@ export default {
     }
   }
 
+  img.logo {
+    margin: 0 auto;
+  }
+
+  main {
+    background-color: #4ec283;
+  }
 
   h6 {
     text-align: center;
