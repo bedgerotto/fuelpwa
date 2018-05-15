@@ -4,8 +4,9 @@ import Hello from '@/components/Hello'
 import FuelControll from '@/components/FuelControll'
 
 import 'font-awesome/css/font-awesome.css'
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap/dist/js/bootstrap.js'
+import 'jquery/dist/jquery.js'
+import 'materialize-css/dist/css/materialize.css'
+import 'materialize-css/dist/js/materialize.js'
 
 Vue.use(Router)
 
