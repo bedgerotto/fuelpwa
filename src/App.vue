@@ -6,12 +6,12 @@
           <i class="material-icons">local_gas_station</i>FuelApp</a>
         <ul id="nav-mobile" class="left hide-on-med-and-down">
           <li>
-            <a class='dropdown-trigger blue-grey darken-4' href='#' data-target='dropdown1'>
+            <a class='dropdown-trigger blue-grey darken-4' href='javascript:;' data-target='dropdown1' v-on:click="addConsumo()">
               <i class="material-icons">add</i>
             </a>
           </li>
           <li>
-            <a class='dropdown-trigger blue-grey darken-4' href="#configModal" data-target='dropdown1'>
+            <a class='dropdown-trigger blue-grey darken-4' v-on:click="addConfig()" data-target='dropdown1'>
               <i class="material-icons">settings</i>
             </a>
           </li>
@@ -20,13 +20,17 @@
     </nav>
     <div class="main row">
       <div class="col s12">
-        <div class="card horizontal">
+        <h4>Consumo atual: {{ media_consumo_atual}}</h4>
+        <ul class="collection" v-if="getKmInicial()">
+          <li class="collection-item" v-for="item in lista_consumo">Km atual: {{ item.km_atual }}</li>
+        </ul>
+        <div class="card horizontal" v-else>
           <div class="card-stacked">
             <div class="card-content">
               <p>Nenhuma configuração identificada. Clique no link abaixo e adicione  as informações do seu veículo.</p>
             </div>
             <div class="card-action">
-              <a href="#configModal" class="modal-trigger">Configurar</a>
+              <a v-on:click="addConfig()" class="modal-trigger">Configurar</a>
             </div>
           </div>
         </div>
@@ -41,22 +45,51 @@
     <div id="configModal" class="modal">
       <div class="modal-content">
         <h4>Configurações</h4>
-        <label for="type">Tipo do veículo</label>
-        <input type="text" id="type">
+        <label for="type">Kilometragem Inicial</label>
+        <input type="text" id="type" v-model="km_inicial">
       </div>
       <div class="modal-footer">
-        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat" v-on:click="saveConfig()">Salvar</a>
       </div>
     </div>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
 export default {
   name: 'app',
+  data () {
+    return {
+      km_inicial: localStorage.getItem('km_inicial'),
+      media_consumo_atual: 0
+    }
+  },
+  created: function () {
+    if (localStorage.getItem('lista_consumo') === null) {
+      localStorage.setItem('lista_consumo', [])
+    }
+  },
+  computed: {
+    lista_consumo: function () {
+      return JSON.parse(localStorage.getItem('lista_consumo'))
+    }
+  },
   methods: {
     addConfig: function () {
-      console.log('teste')
+      $('#configModal').modal().modal('open')
+    },
+    saveConfig: function () {
+      localStorage.setItem('km_inicial', this.km_inicial)
+    },
+    getKmInicial: function () {
+      return localStorage.getItem('km_inicial')
+    },
+    addConsumo: function () {
+      var lista = this.lista_consumo
+      lista.push({km_atual: 5000})
+      this.$forceUpdate()
+      return localStorage.setItem('lista_consumo', JSON.stringify(lista))
     }
   }
 }
