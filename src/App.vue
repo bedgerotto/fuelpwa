@@ -15,20 +15,16 @@
               <i class="material-icons">settings</i>
             </a>
           </li>
+          <li>
+            <a class='dropdown-trigger blue-grey darken-4' v-on:click="showConsumo()" data-target='dropdown1'>
+              <i class="material-icons">info</i>
+            </a>
+          </li>
         </ul>
       </div>
     </nav>
     <div class="main row">
-      <div class="col s12">
-        <div class="col s12">
-          <div class="card horizontal">
-            <div class="card-stacked">
-              <div class="card-content">
-                <h4>Média Geral: {{ media_consumo_total }} KM/L</h4>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="col s12 content-table">
         <table class="highlight responsive" v-if="getKmInicial()">
           <tr>
             <th><span>Km atual</span></th>
@@ -36,12 +32,12 @@
             <th><span>Consumo (KM/L)</span></th>
             <th></th>
           </tr>
-          <tr v-for="item in lista_consumo" track-by="$index">
+          <tr v-for="item in lista_consumo">
             <td>{{ item.km_atual }}</td>
             <td>{{ item.qtd_abastecida }}</td>
             <td>{{ item.media_consumo }}</td>
             <td>
-              <a class="right remove-item" href="javascript:;" v-on:click="removeConsumo($index)"><i class="material-icons">delete</i></a>
+              <a class="right remove-item" href="javascript:;" v-on:click="removeConsumo(item)"><i class="material-icons">delete</i></a>
             </td>
           </tr>
         </table>
@@ -90,7 +86,24 @@
         <a href="#!" class="modal-close waves-effect waves-green btn-flat" v-on:click="saveConsumo()">Salvar</a>
       </div>
     </div>
-    <router-view></router-view>
+
+    <div id="mediaConsumoModal" class="modal">
+      <div class="modal-content">
+        <h4>Média Consumo Geral</h4>
+        <div class="col s12">
+          <div class="card horizontal">
+            <div class="card-stacked">
+              <div class="card-content">
+                <h4>{{ media }} KM/L</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Fechar</a>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -101,16 +114,14 @@ export default {
     return {
       km_inicial: '',
       km_atual: '',
-      qtd_abastecida: ''
+      qtd_abastecida: '',
+      media: 0.00
     }
   },
   created: function () {
     if (localStorage.getItem('lista_consumo') === null) {
       localStorage.setItem('lista_consumo', [])
     }
-  },
-  ready: function () {
-    this.$forceUpdate()
   },
   computed: {
     lista_consumo: function () {
@@ -120,15 +131,22 @@ export default {
       }
       return []
     },
-    media_consumo_total: function () {
+    total_litros_abastecidos: function () {
       return this.lista_consumo.reduce(function (total, item) {
-        return total + parseFloat(item.media_consumo)
+        return total + parseFloat(item.qtd_abastecida)
       }, 0)
     }
   },
   methods: {
     addConfig: function () {
       $('#configModal').modal().modal('open')
+    },
+    showConsumo: function () {
+      if (this.lista_consumo.length === 0) {
+        this.media = 0.00
+      }
+      this.media = parseFloat((this.lista_consumo.slice(-1)[0].km_atual - localStorage.getItem('km_inicial')) / this.total_litros_abastecidos).toFixed(2)
+      $('#mediaConsumoModal').modal().modal('open')
     },
     saveConfig: function () {
       localStorage.setItem('km_inicial', this.km_inicial)
@@ -142,28 +160,35 @@ export default {
       this.resetFields()
     },
     saveConsumo: function () {
-      var lista = this.lista_consumo
-      var kmInicial
+      if (Number(this.km_atual) > 0 && Number(this.qtd_abastecida) > 0) {
+        var lista = this.lista_consumo
+        var kmInicial
 
-      if (lista.length === 0) {
-        kmInicial = this.getKmInicial()
-      } else {
-        kmInicial = lista.slice(-1)[0].km_atual
+        if (lista.length === 0) {
+          kmInicial = this.getKmInicial()
+        } else {
+          kmInicial = lista.slice(-1)[0].km_atual
+        }
+
+        lista.push({
+          km_atual: this.km_atual,
+          qtd_abastecida: this.qtd_abastecida,
+          media_consumo: this.mediaConsumo(this.km_atual, kmInicial, this.qtd_abastecida)
+        })
+        this.$nextTick(function () {
+          this.$forceUpdate()
+        })
+
+        return localStorage.setItem('lista_consumo', JSON.stringify(lista))
       }
-
-      lista.push({
-        km_atual: this.km_atual,
-        qtd_abastecida: this.qtd_abastecida,
-        media_consumo: this.mediaConsumo(this.km_atual, kmInicial, this.qtd_abastecida)
-      })
-
-      this.$forceUpdate()
-      return localStorage.setItem('lista_consumo', JSON.stringify(lista))
+      return false
     },
-    removeConsumo: function (index) {
+    removeConsumo: function (item) {
       var lista = this.lista_consumo
-      lista.splice(index, 1)
-      this.$forceUpdate()
+      lista.splice(lista.indexOf(item), 1)
+      this.$nextTick(function () {
+        this.$forceUpdate()
+      })
       return localStorage.setItem('lista_consumo', JSON.stringify(lista))
     },
     mediaConsumo: function (kmAtual, kmInicial, qtdAbastecida) {
@@ -229,6 +254,10 @@ export default {
 
   .remove-item {
     color: indianred;
+  }
+  .content-table {
+    max-height: 515px !important;
+    overflow-y: auto;
   }
 </style>
 
